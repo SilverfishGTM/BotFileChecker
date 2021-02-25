@@ -1,12 +1,12 @@
 ***********************
-Bot File Checker V1.0.0
+Bot File Checker V1.0.2
 ***********************
 Made by Silverfish
 Source code should have been an option to include with your download, program was made in visual studio C#. If you don't want to trust the author, you can compile the code yourself.
 ***********************
 Special thanks to:
-cephalopod, Geese, KILLER
-for test bots and guides
+cephalopod, Geese, KILLER, TheRoboteer, Nabi
+for test bots, guides, bug reports, and suggestions
 ***********************
 This program isn't perfect, and may screw up your computer. This is the same for every program ever written. Run it at your own risk.
 Talk to Silverfish if you find a bug.

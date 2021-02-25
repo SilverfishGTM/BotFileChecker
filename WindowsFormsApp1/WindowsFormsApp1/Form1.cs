@@ -1,4 +1,4 @@
-﻿/* Bot file checker v1.0.0
+/* Bot file checker v1.0.0
  * @author: Silverfish
  * @special thanks: cephalopod, Geese, KILLER 
  * READ THE README IF YOU DON'T UNDERSTAND WHAT TO DO/HOW TO READ THE RESULTS.
@@ -83,6 +83,8 @@ namespace WindowsFormsApp1
                 criticalCount = 0;
                 warningCount = 0;
 
+                int temp; //This is going to be used for tryParse to make sure a string is a number.
+
                 string currentLine = ""; //The line the program has just read
                 string previousLine = ""; //The line before currentLine
                 string componentFlag = ""; //Qualifier used to ID component type
@@ -130,11 +132,14 @@ namespace WindowsFormsApp1
                             log.WriteLine("ERROR: Reader had an issue scanning a component."); //Handle the reader having an issue
                         }
 
-                        if(isExtenderBot && nextCompOnChassis && componentFlag != "SmartZone")
+                        if(isExtenderBot && nextCompOnChassis)
                         {
-                            log.WriteLine(DASHES);
-                            log.WriteLine("CRITICAL: Component " + currentComponent + " has been BFEd to the chassis of this extenderbot!");
-                            criticalCount++;
+                            if (componentFlag != "SmartZone")
+                            {
+                                log.WriteLine(DASHES);
+                                log.WriteLine("CRITICAL: Component " + currentComponent + " has been BFEd to the chassis of this extenderbot!");
+                                criticalCount++;
+                            }
                             nextCompOnChassis = false; //Write in an issue with components attached to the chassis and reset the flag for it.
                         }
 
@@ -148,7 +153,7 @@ namespace WindowsFormsApp1
                             nextCompOnChassis = true; //Set a flag so that we can say the next component is attached to the chassis.
                         }
 
-                        if (!currentLine.Contains(" ")) //Burst motors in particular have range of motion directly below the path, but before the base component for the next component. We need to handle this, and the burst line would need to contain a space.
+                        if (!currentLine.Contains(" ") && int.TryParse(currentLine, out temp)) //Burst motors in particular have range of motion directly below the path, but before the base component for the next component. We need to handle this, and the burst line would need to contain a space. Additionally, smartzones use words, so parsing an int here should fix the issue.
                             pathLast = false; //If we didn't just read a burst motor line, we can move on.
                     }
                     //This line checks to see if we have a component type identifier as the current line

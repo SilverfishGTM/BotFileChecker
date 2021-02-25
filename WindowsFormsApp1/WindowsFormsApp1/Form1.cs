@@ -1,6 +1,6 @@
 /* Bot file checker v1.0.0
  * @author: Silverfish
- * @special thanks: cephalopod, Geese, KILLER 
+ * @special thanks: cephalopod, Geese, KILLER, TheRoboteer, Nabi 
  * READ THE README IF YOU DON'T UNDERSTAND WHAT TO DO/HOW TO READ THE RESULTS.
  * */
 
@@ -77,7 +77,7 @@ namespace WindowsFormsApp1
             {
                 //Open up the bot file and make the log
                 StreamReader botFile = File.OpenText(botPath);
-                StreamWriter log = File.CreateText(outPath + @"\log.txt");
+                
 
                 //Reset the error counts so that we don't have them carrying over from the last instance.
                 criticalCount = 0;
@@ -101,6 +101,12 @@ namespace WindowsFormsApp1
                 {
                     firstCheckComplete = true; //If there's no armor definitions file, don't bother checking armor.
                 }
+
+                botFile.ReadLine();
+
+                string botName = botFile.ReadLine().Substring(6); //This will be used to name log files.
+                StreamWriter log = File.CreateText(outPath + @"\" + botName + "-log.txt"); //Append the bot's name to the log.
+
 
                 log.WriteLine("Beginning log...");
 
@@ -178,7 +184,7 @@ namespace WindowsFormsApp1
                 if (genComponentList) //Only run this if we're supposed to generate a list of components.
                 {
                     //Make a new file to store the list
-                    StreamWriter componentList = File.CreateText(outPath + @"\components.txt");
+                    StreamWriter componentList = File.CreateText(outPath + @"\" + botName + "-components.txt");
 
                     componentList.WriteLine("Beginning component list...");
 

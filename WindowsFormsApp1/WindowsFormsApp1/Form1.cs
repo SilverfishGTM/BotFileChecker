@@ -28,6 +28,7 @@ namespace WindowsFormsApp1
         string armorPath; //The location of the armor definitions file
         int criticalCount; //Current number of critical errors
         int warningCount; //Current number of warnings
+        List<string> cheatbotStyles; //This contains a list of the children of all the cheatbot components.
         const string DASHES = "-----------------";
 
         OpenFileDialog fileDiag = new OpenFileDialog();
@@ -77,7 +78,9 @@ namespace WindowsFormsApp1
             {
                 //Open up the bot file and make the log
                 StreamReader botFile = File.OpenText(botPath);
-                
+
+                //Get our list of cheatbot children ready
+                cheatbotStyles = TrawlComponents();
 
                 //Reset the error counts so that we don't have them carrying over from the last instance.
                 criticalCount = 0;
@@ -226,6 +229,7 @@ namespace WindowsFormsApp1
             string currentFlag = ""; //Flag the component has listed for itself
             string currentLine = ""; //Current line we're reading in the file
             string componentName = ""; //Component's listed name
+            bool isChild = path.Contains(@"Styles\"); //if the path contains the "styles" directory, we know that it's a child.
 
             try
             {
@@ -233,11 +237,11 @@ namespace WindowsFormsApp1
 
                 while ((currentLine = compFile.ReadLine()) != null) //While there's still data to read.
                 {
-                    if (currentLine.Substring(0, 4).ToLower().Equals("name")) //If we've found the 'name' section of the file
+                    if (currentLine.Length >= 4 && currentLine.Substring(0, 4).ToLower().Equals("name")) //If we've found the 'name' section of the file
                     {
                         componentName = currentLine.Substring(currentLine.IndexOf("=") + 2); //Save the component's name. We need to remove the 'name = ' part of the line.
                     }
-                    else if (currentLine.Substring(0, 4).ToLower().Equals("base")) //If we've found the component type section
+                    else if (currentLine.Length >= 4 && currentLine.Substring(0, 4).ToLower().Equals("base")) //If we've found the component type section
                     {
                         currentFlag = currentLine.Substring(currentLine.IndexOf("=") + 2); //Save the type the component says it is
                         if (currentFlag.ToLower().Equals(flag.ToLower()) == false)
@@ -248,7 +252,7 @@ namespace WindowsFormsApp1
                             criticalCount++; //Throw a fit if the provided component type doesn't match the type the component lists for itself
                         }
                     }
-                    else if (currentLine.Substring(0, 6).ToLower().Equals("hidden")) //This entails a potential cheatbot component.
+                    else if (currentLine.Length >= 6 && currentLine.Substring(0, 6).ToLower().Equals("hidden")) //This entails a potential cheatbot component.
                     {
                         if (currentLine.Substring(currentLine.IndexOf("=") + 2).Equals("2"))
                         {
@@ -259,6 +263,22 @@ namespace WindowsFormsApp1
                         }
                     }
                 }
+
+                if (isChild) //We don't need to check if a component's parent is a cheatbot component if the component doesn't have parents.
+                {
+                    foreach (string element in cheatbotStyles) //This loop is going to be used to check our component name against cheatbot stuff.
+                    {
+                        if (element.Contains(path.Substring(path.LastIndexOf(@"\") + 1))) //Keep in mind, we're tracking the entire styles lines here.
+                        {
+                            log.WriteLine(DASHES);
+                            log.WriteLine("WARNING: Cheatbot component detected! File " + path + "'s parent component has hidden = 2 (cheatbot component)");
+                            log.WriteLine("Is this component legal in your tournament?");
+                            warningCount++; //If a parent has this txt as a cheatbot child, throw a fit.
+                            break;
+                        }
+                    }
+                }
+                
 
                 compFile.Close(); //Close the file because we're done here.
             }
@@ -359,6 +379,49 @@ namespace WindowsFormsApp1
                 }
             }
             return count;
+        }
+
+        private List<string> TrawlComponents()
+        {
+            StreamReader currentFile;
+            List<string> styles = new List<string>(); //This will contain a list of all the cheatbot components' styles
+            string[] fileNames = Directory.GetFiles(RA2Path + @"\Components", "*.txt"); //Every text file in the components folder
+            string localStyles = ""; //This'll be used to hold styles while we wait and see if the file is hidden
+            bool isCheatbot = false; //Take a wild guess
+            bool hasStyles = false; //If a component doesn't have styles, we don't need to track it
+            string currentLine = ""; //Our current line in the file.
+
+            for(int i = 0; i < fileNames.Length; i++)
+            {
+                isCheatbot = false;
+                hasStyles = false;
+                currentFile = File.OpenText(fileNames[i]);
+                while((currentLine = currentFile.ReadLine()) != null)
+                {
+                    if(currentLine.Length >= 6 && currentLine.Substring(0,6).ToLower().Equals("styles")) //If we're in the styles line
+                    {
+                        if (currentLine.Length >= 16 && currentLine.ToLower().Contains(".txt")) //Because styles=default is a line.
+                        {
+                            localStyles = currentLine; //Save our styles
+                            hasStyles = true;
+                        }
+                    }
+                    else if(currentLine.Length >= 6 && currentLine.Substring(0,6).ToLower().Equals("hidden")) //If a hidden line exists
+                    {
+                        if (currentLine.Substring(currentLine.IndexOf("=") + 2).Equals("2")) //This means that we have a cheatbot component.
+                        {
+                            isCheatbot = true;
+                        }
+                    }
+
+                    if (isCheatbot && hasStyles && !fileNames[i].Contains("IRLARM") && !fileNames[i].Contains("IRLEXT"))
+                    {
+                        styles.Add(localStyles); //Thow in our styles as cheatbot components if the parent is a cheatbot.
+                    }
+                }
+                currentFile.Close();
+            }
+            return styles;
         }
 
         private void BotBrowseButton_Click(object sender, EventArgs e)

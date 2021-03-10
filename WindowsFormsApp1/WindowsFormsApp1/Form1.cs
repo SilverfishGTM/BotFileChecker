@@ -26,6 +26,8 @@ namespace WindowsFormsApp1
         string RA2Path; //The directory in which Robot Arena 2.exe exists
         string outPath; //The directory to print logs to
         string armorPath; //The location of the armor definitions file
+        string lastBotPath; //The last folder that the user picked a bot file in
+        string lastArmorPath; //The last folder the user picked an armor definitions file in
         int criticalCount; //Current number of critical errors
         int warningCount; //Current number of warnings
         List<string> cheatbotStyles; //This contains a list of the children of all the cheatbot components.
@@ -49,6 +51,8 @@ namespace WindowsFormsApp1
             criticalCount = 0;
             warningCount = 0;
             armorPath = ArmorPathBox.Text;
+            lastArmorPath = "";
+            lastBotPath = "";
         }
 
         //Check File Button
@@ -307,6 +311,13 @@ namespace WindowsFormsApp1
         {
             if (isExtenderBot && armorLine.Equals("0 3 0 173 0")) //This is the armor line for the pixel chassis which is used on extenderbots. We don't need to do anything if these match.
             { }
+            else if(armorLine.Equals("1 12 0 200 0"))
+            {
+                log.WriteLine(DASHES);
+                log.WriteLine("WARNING: This robot uses Double Strength Aluminum (DSA) Armor!");
+                log.WriteLine("Is this legal in your tournament?");
+                warningCount++;
+            }
             else
             {
                 try
@@ -426,12 +437,16 @@ namespace WindowsFormsApp1
 
         private void BotBrowseButton_Click(object sender, EventArgs e)
         {
+            if (lastBotPath != "")
+                fileDiag.InitialDirectory = lastBotPath;
+
             fileDiag.Filter = "Bot files (*.bot) | *.bot"; //Make it so that we can only read .bot files.
             if(fileDiag.ShowDialog() == DialogResult.OK) //If we returned successfully, change the bot path
             {
                 botPath = fileDiag.FileName;
             }
             BotDirectoryBox.Text = botPath; //Update the text box.
+            lastBotPath = botPath.Substring(0, botPath.LastIndexOf(@"\") + 1);
         }
 
         private void RA2BrowseButton_Click(object sender, EventArgs e)
@@ -457,12 +472,16 @@ namespace WindowsFormsApp1
         //This is the armor definition file's browse button
         private void button1_Click_1(object sender, EventArgs e)
         {
+            if (lastArmorPath != "")
+                fileDiag.InitialDirectory = lastArmorPath;
+
             fileDiag.Filter = "Text files (*.txt) | *.txt"; //Make it so that we can only read .txt files.
             if (fileDiag.ShowDialog() == DialogResult.OK) //If we returned successfully, change the armor definitions path
             {
                 armorPath = fileDiag.FileName;
             }
             ArmorPathBox.Text = armorPath; //Update the text box.
+            lastArmorPath = armorPath.Substring(0, armorPath.LastIndexOf(@"\") + 1);
         }
 
         //This is the RA2 Directory textbox

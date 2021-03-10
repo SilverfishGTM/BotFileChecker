@@ -103,6 +103,7 @@ namespace WindowsFormsApp1
                 bool firstCompFound = false; //Flag for if we've reached the 'components' section
                 bool firstCheckComplete = false; //Flag for whether the armor has been checked yet (given that it will be)
                 bool nextCompOnChassis = false; //This is a flag set when the next component on an extenderbot is directly attached to the chassis.
+                bool nextCompOnNone = false; //This flag is used to check for -1 attachments.
 
                 if(armorPath == "")
                 {
@@ -155,15 +156,26 @@ namespace WindowsFormsApp1
                             }
                             nextCompOnChassis = false; //Write in an issue with components attached to the chassis and reset the flag for it.
                         }
+                        else if(nextCompOnNone)
+                        {
+                            log.WriteLine(DASHES);
+                            log.WriteLine("CRITICAL: Component " + currentComponent + " has been BFEd to -1!");
+                            criticalCount++;
+                            nextCompOnNone = false;
+                        }
 
                         componentNext = false; //We just finished handling a component, this flag is no longer true
                         pathLast = true; //However, the last line (the one we just read) was a path.
                     }
                     else if(pathLast) //If we just finished handling a component
                     {
-                        if(isExtenderBot && currentLine.Equals("0")) //If the new component is attached to the chassis and we're looking at an extenderbot
+                        if (isExtenderBot && currentLine.Equals("0")) //If the new component is attached to the chassis and we're looking at an extenderbot
                         {
                             nextCompOnChassis = true; //Set a flag so that we can say the next component is attached to the chassis.
+                        }
+                        else if (currentLine.Equals("-1"))
+                        {
+                            nextCompOnNone = true;
                         }
 
                         if (!currentLine.Contains(" ") && int.TryParse(currentLine, out temp)) //Burst motors in particular have range of motion directly below the path, but before the base component for the next component. We need to handle this, and the burst line would need to contain a space. Additionally, smartzones use words, so parsing an int here should fix the issue.

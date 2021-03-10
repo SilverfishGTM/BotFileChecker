@@ -1,4 +1,4 @@
-/* Bot file checker v1.0.0
+/* Bot file checker v1.0.4
  * @author: Silverfish
  * @special thanks: cephalopod, Geese, KILLER, TheRoboteer, Nabi 
  * READ THE README IF YOU DON'T UNDERSTAND WHAT TO DO/HOW TO READ THE RESULTS.

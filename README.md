@@ -1,5 +1,5 @@
 ***********************
-Bot File Checker V1.0.3
+Bot File Checker V1.0.4
 ***********************
 Made by Silverfish
 Source code should have been an option to include with your download, program was made in visual studio C#. If you don't want to trust the author, you can compile the code yourself.
@@ -28,7 +28,7 @@ How to interpret the results:
 Initial screen:
 You will get a pop-up that tells you how many 'critical edits' and how many 'warnings' the program ran across. 'Critical edits' are changes that are.
 basically never legal, such as armor modifications, component type changes, and components BFEd to the chassis of an extenderbot.
-'Warnings' for now just means cheatbot2 components, this may change as the program (hopefully) gets updated.
+'Warnings' for now just means cheatbot2 components and DSA armor, this may change as the program (hopefully) gets updated.
 
 Logs/component list:
 Going to your output folder, the program will have generated one to two files: log.txt and possibly components.txt.

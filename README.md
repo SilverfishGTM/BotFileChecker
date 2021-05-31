@@ -40,9 +40,7 @@ How to interpret the results:
 
 Initial screen:
 
-You will get a pop-up that tells you how many 'critical edits' and how many 'warnings' the program ran across. 'Critical edits' are changes that are.
-
-basically never legal, such as armor modifications, component type changes, and components BFEd to the chassis of an extenderbot.
+You will get a pop-up that tells you how many 'critical edits' and how many 'warnings' the program ran across. 'Critical edits' are changes that are basically never legal, such as armor modifications, component type changes, and components BFEd to the chassis of an extenderbot.
 
 'Warnings' for now just means cheatbot2 components and DSA armor, this may change as the program (hopefully) gets updated.
 

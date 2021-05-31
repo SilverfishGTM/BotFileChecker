@@ -55,3 +55,6 @@ This program isn't a replacement for actually looking at a bot in the bot lab. H
 -Clipping components (too much eyeballing is necessary to reasonably do this).
 -Miscellaneous IRL ruleset violations (I.E. more components than are allowed, weapons on rammers, etc.).
 -Cheaty .pys and AI lines (eternalflame, for instance).
+************************
+Known issues:
+-The first component in the file is not checked for being attached to -1.

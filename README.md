@@ -77,6 +77,8 @@ This program should, at current, be able to find:
   
 -Components being BFEd to the chassis of an extenderbot.
   
+-Components being BFEd to attachment point -1.
+  
 ************************
 What this program DOESN'T check for:
   
